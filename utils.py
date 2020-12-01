@@ -456,7 +456,7 @@ def product_info(link,directory,country):
 
     #Product Highlights
     try:
-        temp_ph = selenium_soup.findAll('ul',{'class':'a-unordered-list a-vertical a-spacing-none'})[0].findAll('li')
+        temp_ph = selenium_soup.findAll('div',{'id':'feature-bullets'})[0].findAll('li')
         counter_ph = len(temp_ph)
         product_highlights = []
         for i in range(counter_ph):
@@ -490,7 +490,6 @@ def product_info(link,directory,country):
                 if re.findall('ASIN',temp_pd[i].text.strip().split('\n')[0])[0]:
                     try:
                         asin = temp_pd[i].text.strip().split('\n')[3]
-                        print(asin)
                     except:
                         pass
             except IndexError:
