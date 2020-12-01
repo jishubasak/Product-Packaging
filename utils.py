@@ -25,8 +25,7 @@ from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.chrome.options import Options
 from selenium.common.exceptions import NoSuchElementException
 
-import boto3
-import botocore
+from pathlib import Path
 
 # Use proxy and headers for safe web scraping
 # os.environ['HTTPS_PROXY'] = 'http://3.112.188.39:8080'
@@ -320,7 +319,10 @@ def upload_s3(filename,key):
     except FileNotFoundError:
         pass
 
-def product_info(link,directory,country):
+def build_dir(path):
+    Path(path).mkdir(parents=True, exist_ok=True)
+
+def product_info(link,directory,directory_images,directory_html,country):
     '''Get all the product information of an Amazon Product
 
     PARAMETER
@@ -1009,7 +1011,8 @@ def product_info(link,directory,country):
     tags = '<CPT14>'.join(tags)
     print(tags)
 
-
+    build_dir(directory_images)
+    os.chdir(directory_images)
     #Images
     images = []
     for i in [0,3,4,5,6,7,8,9]:
@@ -1033,6 +1036,8 @@ def product_info(link,directory,country):
 #             upload_s3("{}_{}.jpg".format(asin,i),
 #                       directory+"/images/" + product_image)
 #             delete_images(product_image)
+    build_dir(directory_html)
+    os.chdir(directory_html)
     try:
         with open("{}.html".format(asin), "w",encoding='utf-8') as file:
             file.write(str(selenium_soup))
@@ -1043,6 +1048,8 @@ def product_info(link,directory,country):
         except:
             with open("{}.html".format(link), "w",encoding='utf-8') as file:
                 file.write(str(selenium_soup))
+    build_dir(directory)
+    os.chdir(directory)
 
     return [product_title,rating_star,overall_rating,company,price,
             product_highlights,product_length,product_width,product_height,
