@@ -483,20 +483,21 @@ def product_info(link,directory,country):
     #Product Details/Dimensions:
     #USA
     try:
-        temp_pd = selenium_soup.findAll('div',{'class':'content'})[0].findAll('ul')[0].findAll('li')
+        temp_pd = selenium_soup.findAll('div',{'id':'detailBulletsWrapper_feature_div'})[0].findAll('ul')[0].findAll('li')
         counter_pd = len(temp_pd)
         for i in range(counter_pd):
             try:
-                if re.findall('ASIN',temp_pd[i].text)[0]:
+                if re.findall('ASIN',temp_pd[i].text.strip().split('\n')[0])[0]:
                     try:
-                        asin = temp_pd[i].text.split(' ')[1]
+                        asin = temp_pd[i].text.strip().split('\n')[3]
+                        print(asin)
                     except:
                         pass
             except IndexError:
                 pass
             try:
-                if re.findall('Product Dimensions|Product Dimension|Product dimensions',temp_pd[i].text)[0]:
-                    pd_temp = temp_pd[i].text.strip().split('\n')[2].strip().split(';')
+                if re.findall('Product Dimensions|Product Dimension|Product dimensions',temp_pd[i].text.strip().split('\n')[0])[0]:
+                    pd_temp = temp_pd[i].text.strip().split('\n')[3].strip().split(';')
                     try:
                         product_length = float(pd_temp[0].split('x')[0])
                     except IndexError:
@@ -554,9 +555,8 @@ def product_info(link,directory,country):
         print(asin)
     except:
         pass
-
     try:
-        temp_pd = selenium_soup.findAll('div',{'class':'content'})[1].findAll('ul')[0].findAll('li')
+        temp_pd = selenium_soup.findAll('div',{'id':'detailBulletsWrapper_feature_div'})[1].findAll('ul')[0].findAll('li')
         counter_pd = len(temp_pd)
         for i in range(counter_pd):
             try:
@@ -630,7 +630,7 @@ def product_info(link,directory,country):
 
     #India
     try:
-        temp_pd = selenium_soup.findAll('div',{'class':'content'})[0].findAll('ul')[0].findAll('li')
+        temp_pd = selenium_soup.findAll('div',{'id':'detailBulletsWrapper_feature_div'})[0].findAll('ul')[0].findAll('li')
         counter_pd = len(temp_pd)
         for i in range(counter_pd):
             try:
@@ -887,8 +887,10 @@ def product_info(link,directory,country):
     except NameError:
         shipping_weight = 'Not Scrapable'
 
-    print(product_length,product_width,product_height,product_weight,asin,pd_unit,
-          best_seller_cat,best_seller_prod,weight_unit,shipping_weight,shipping_weight_unit)
+    print('Product Length: {}, product_width: {}, product_height: {},product_weight: {}, asin: {}, pd_unit: {}, best_seller_cat: {}, best_seller_prod: {} , weight_unit: {},shipping_weight: {}, shipping_weight_unit: {}'.format(product_length,
+        product_width,product_height,product_weight,asin,pd_unit,
+        best_seller_cat,best_seller_prod,weight_unit,shipping_weight,
+        shipping_weight_unit))
 
     #Customer Review Ratings - Overall
     time.sleep(0.5)
@@ -1036,8 +1038,13 @@ def product_info(link,directory,country):
         with open("{}.html".format(asin), "w",encoding='utf-8') as file:
             file.write(str(selenium_soup))
     except:
-        with open("{}.html".format(product_title), "w",encoding='utf-8') as file:
-            file.write(str(selenium_soup))
+        try:
+            with open("{}.html".format(product_title), "w",encoding='utf-8') as file:
+                file.write(str(selenium_soup))
+        except:
+            with open("{}.html".format(link), "w",encoding='utf-8') as file:
+                file.write(str(selenium_soup))
+
     return [product_title,rating_star,overall_rating,company,price,
             product_highlights,product_length,product_width,product_height,
             product_weight,asin,pd_unit,best_seller_cat,best_seller_prod,
