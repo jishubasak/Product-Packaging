@@ -1096,9 +1096,7 @@ def database(product_data,**kwargs):
             print("Enter Product Name")
         metadata = [link,country,cat1,cat2,cat3,cat4,product]
     except NameError:
-        try:
-            cat4 = None
-            metadata = [link,country,cat1,cat2,cat3,cat4,product]
+        try:            metadata = [link,country,cat1,cat2,cat3,cat4,product]
         except NameError:
             try:
                 cat4 = None
@@ -1169,3 +1167,37 @@ def checkpoint(link_list,directory,product):
     except:
         new_list = link_list
     return new_list
+
+def created_date(filename):
+    path = Path(filename)
+    return datetime.datetime.fromtimestamp(path.stat().st_ctime)
+
+def modification_date(filename):
+    t = os.path.getmtime(filename)
+    return datetime.datetime.fromtimestamp(t)
+
+def accessed_date(filename):
+    t = os.path.getatime(filename)
+    return datetime.datetime.fromtimestamp(t)
+
+def file_info(mypath):
+    dataframe = pd.DataFrame()
+    for subdir, dirs, files in os.walk(mypath):
+        for filename in files:
+            filepath = subdir + os.sep + filename
+            data = []
+            if folder != mypath:
+                data.append(subdir.split(mypath)[1])
+            else:
+                data.append('')
+            data.append(filename)
+            data.append(created_date(filepath))
+            data.append(modification_date(filepath))
+            data.append(accessed_date(filepath))
+            data.append(str(Path(filepath).stat().st_size/1000000) + ' Mb')
+            data.append(Path(filepath).suffix.split('.')[1])
+            dataframe = dataframe.append([data])
+    dataframe.columns = ['folder','filename','created date',
+                         'modification data','accessed date',
+                         'size','file_type']
+    return dataframe
