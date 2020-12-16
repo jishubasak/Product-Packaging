@@ -14,6 +14,7 @@ from collections import Counter
 import pickle
 import warnings
 import time
+import datetime
 warnings.filterwarnings("ignore")
 
 from wordcloud import WordCloud
@@ -75,7 +76,7 @@ def browser(link):
     }
 #     helium = r'C:\Users\Dell-pc\AppData\Local\Google\Chrome\User Data\Default\Extensions\njmehopjdpcckochcggncklnlmikcbnb\4.2.12_0'
 #     options.add_argument(helium)
-    chrome_path = r'C:/Users/Dell-pc/Desktop/publication/chromedriver.exe'
+    chrome_path = r'C:/Users/Dell-pc/Documents/GitHub/Product-Packaging/chromedriver.exe'
     options.add_experimental_option("prefs", prefs)
     options.headless = True
     driver = webdriver.Chrome(chrome_path,chrome_options=options)
@@ -1154,6 +1155,7 @@ def checkpoint(link_list,directory,product):
 #             print("The object does not exist.")
 #         else:
 #             raise
+    os.chdir(directory)
     conn = sqlite3.connect('{}.db'.format(product))
     try:
         df = pd.read_sql('''SELECT * FROM Product''', conn)
@@ -1186,7 +1188,7 @@ def file_info(mypath):
         for filename in files:
             filepath = subdir + os.sep + filename
             data = []
-            if folder != mypath:
+            if subdir != mypath:
                 data.append(subdir.split(mypath)[1])
             else:
                 data.append('')
